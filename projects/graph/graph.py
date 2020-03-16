@@ -93,7 +93,7 @@ class Graph:
                 for neighbor in self.get_neighbors(v):
                     s.push(neighbor)
 
-    def dft_recursive(self, starting_vertex):
+    def dft_recursive(self, starting_vertex, visited=None):
         """
         Print each vertex in depth-first order
         beginning from starting_vertex.
@@ -101,9 +101,16 @@ class Graph:
         This should be done using recursion.
         """
         # Check if the node has been visited
+        if visited is None:
+            visited = set()
         # If not...
             # Mark it as visited
+        print(starting_vertex)
+        visited.add(starting_vertex)
             # Call dft_recursive on each neighbor
+        for neighbor in self.vertices[starting_vertex]:
+            if neighbor not in visited:
+                self.dft_recursive(neighbor, visited)
 
     def bfs(self, starting_vertex, destination_vertex):
         """
@@ -112,19 +119,33 @@ class Graph:
         breath-first order.
         """
         # Create a queue
+        q = Queue()
         # Enqueue A PATH TO the starting vertex
+        q.enqueue([starting_vertex])
         # Create a set to store visited vertices
+        visited = set()
         # While the queue is not empty...
+        while q.size() > 0:
             # Dequeue the first PATH
+            path = q.dequeue()
             # GRAB THE VERTEX FROM THE END OF THE PATH
+            vertex = path[-1]
             # Check if it's been visited
             # If it hasn't been visited...
-                # Mark it as visited
+            # Mark it as visited
                 # CHECK IF IT'S THE TARGET
                     # IF SO, RETURN THE PATH
                 # Enqueue A PATH TO all of it's neighbors
                     # MAKE A COPY OF THE PATH
                     # ENQUEUE THE COPY
+            if vertex not in visited:
+                visited.add(vertex)
+                if vertex == destination_vertex:
+                    return path
+            for neighbor in self.vertices[vertex]:
+                new_path = list(path)
+                new_path.append(neighbor)
+                q.enqueue(new_path)
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -132,9 +153,30 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        # Create a stack
+        s = Stack()
+        # Create a set to store visited vertices
+        visited = set()
+        # Push the starting vertex
+        s.push([starting_vertex])
+        # While the stack is not empty
+        while s.size() > 0:
+             # Pop the first vertex
+            path = s.pop()
+            # Vertex from end of path
+            vertex = path[-1]
+            # Check if it's been visited
+            # If it hasn't been visited...
+            if vertex not in visited:
+                visited.add(vertex)
+                if vertex == destination_vertex:
+                    return path
+            for neighbor in self.vertices[vertex]:
+                new_path = list(path)
+                new_path.append(neighbor)
+                s.push(new_path)           
 
-    def dfs_recursive(self, starting_vertex):
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None):
         """
         Return a list containing a path from
         starting_vertex to destination_vertex in
@@ -142,7 +184,19 @@ class Graph:
 
         This should be done using recursion.
         """
-        pass  # TODO
+        if visited is None:
+            visited = set()
+        if path is None:
+            path = []
+        visited.add(starting_vertex)
+        path = path + [starting_vertex]
+        if starting_vertex == destination_vertex:
+            return path
+        for neighbor in self.vertices[starting_vertex]:
+            if neighbor not in visited:
+                new_path = self.dfs_recursive(neighbor, destination_vertex, visited, path)
+                if new_path:
+                    return new_path
 
 if __name__ == '__main__':
     graph = Graph()  # Instantiate your graph
